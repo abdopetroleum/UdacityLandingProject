@@ -24,12 +24,13 @@ const navigationList = document.getElementById('navbar__list');
  * End Global Variables
 */
 
-// build the nav
+// Build menu by iterating through the navigationElements
 navigationElements.forEach(element => {
   const navlistElement = `<li class='menu__link ${element.className}' data-link=${element.id}><a href="#${element.id}">${element.dataset.nav}</li>`
   navigationList.insertAdjacentHTML('beforeend', navlistElement)
 })
 
+// Scroll to section on link click by listenting to the click-event in the navigationList
 navigationList.addEventListener('click', e => {
   e.preventDefault()
   const parent = e.target.hasAttribute('data-link')
@@ -39,7 +40,7 @@ navigationList.addEventListener('click', e => {
   const elementToScrollTo = document.getElementById(parent.dataset.link)
   elementToScrollTo.scrollIntoView({block: 'end', behavior: 'smooth'})
 })
-
+// Set section and nav link as active using the IntersectionObserver pattern
 const callback = entries => {
   entries.forEach(entry => {
     const navListElement = document.querySelector(
@@ -61,3 +62,17 @@ const callback = entries => {
     }
   })
 }
+
+// Options for the observer. Most important is the threshold
+const options = {
+  root: null,
+  rootMargin: '0px',
+  threshold: 0.6,
+}
+
+// Setting an observer with options and a callback which checks if the navelement should be active
+// support for all modern browser https://caniuse.com/#feat=intersectionobserver
+const observer = new IntersectionObserver(callback, options)
+navigationElements.forEach(element => {
+  observer.observe(document.getElementById(element.id))
+})
